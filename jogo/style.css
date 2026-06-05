@@ -1,0 +1,516 @@
+/* ==========================================================================
+   🕹️ CONFIGURAÇÕES GLOBAIS (Estilo Pixel Art Retro)
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* Impede que o jogador selecione textos ou arraste elementos por acidente */
+    user-select: none; 
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent; /* Remove o flash azul ao tocar no celular */
+}
+
+body {
+    background: #192519; /* Verde floresta escuro de fundo */
+    background-image: radial-gradient(#223322 20%, transparent 20%), 
+                      radial-gradient(#223322 20%, transparent 20%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+    
+    font-family: 'Press Start 2P', monospace;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   📺 CONTAINER PRINCIPAL DO JOGO
+   ========================================================================== */
+#jogo-container {
+    position: relative;
+    width: 800px;
+    height: 450px;
+    /* Moldura de madeira clássica de jogos antigos */
+    border: 6px solid #4a2d18; 
+    border-radius: 4px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 
+                inset 0 0 20px rgba(0, 0, 0, 0.6);
+    background-color: #3a5f43;
+    overflow: hidden;
+}
+
+/* 🎮 TELA DE INÍCIO (MENU PRINCIPAL) */
+#tela-inicio {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #1e3c23 0%, #0b1a0e 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200; /* Fica na frente de tudo no início */
+    transition: opacity 0.5s ease; /* Efeito de sumir suavemente */
+}
+
+.menu-conteudo {
+    text-align: center;
+    padding: 20px;
+}
+
+.titulo-jogo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 28px;
+    color: #ffd700; /* Dourado */
+    text-shadow: 4px 4px 0px #000000;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    animation: flutuarTitulo 3s infinite ease-in-out;
+}
+
+.subtitulo-jogo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: #a0dba0;
+    text-shadow: 2px 2px 0px #000000;
+    margin-bottom: 50px;
+}
+
+#btn-iniciar {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: #ffffff;
+    background: #e91e63; /* Rosa vibrante */
+    border: 4px solid #ffffff;
+    border-radius: 4px;
+    padding: 16px 32px;
+    cursor: pointer;
+    box-shadow: -4px 4px 0px #880e4f, 0px 8px 15px rgba(0,0,0,0.4);
+    transition: all 0.1s ease;
+    outline: none;
+}
+
+#btn-iniciar:hover {
+    background: #ff4081;
+    transform: translate(2px, -2px);
+    box-shadow: -6px 6px 0px #880e4f, 0px 12px 20px rgba(0,0,0,0.5);
+}
+
+#btn-iniciar:active {
+    transform: translate(-4px, 4px);
+    box-shadow: 0px 0px 0px #000;
+}
+
+#btn-reiniciar {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: #ffffff;
+    background: #4caf50;
+    border: 4px solid #ffffff;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    box-shadow: -4px 4px 0px #2e7d32, 0px 8px 15px rgba(0,0,0,0.4);
+    transition: all 0.1s ease;
+    outline: none;
+    margin-top: 25px;
+}
+
+#btn-reiniciar:hover {
+    background: #66bb6a;
+    transform: translate(2px, -2px);
+    box-shadow: -6px 6px 0px #2e7d32, 0px 12px 20px rgba(0,0,0,0.5);
+}
+
+#btn-reiniciar:active {
+    transform: translate(-4px, 4px);
+    box-shadow: 0px 0px 0px #000;
+}
+
+/* Tela do Canvas */
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* Garante nitidez absoluta para Pixel Art */
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* ==========================================================================
+   🎯 PAINEL DE OBJETIVOS (Quest Log Estilo RPG)
+   ========================================================================== */
+#texto-objetivo {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(12, 24, 12, 0.85);
+    border: 2px solid #ffd700; /* Borda dourada de missão */
+    padding: 8px 14px;
+    color: #ffffff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    line-height: 1.4;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    pointer-events: none; /* Não bloqueia cliques no jogo */
+    z-index: 10;
+    letter-spacing: 0.5px;
+    animation: pulsarBorda 2s infinite alternate;
+}
+
+/* ==========================================================================
+   💬 CAIXA DE DIÁLOGO (HUD de Introdução Tradicional)
+   ========================================================================== */
+#hud-texto {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 740px;
+    min-height: 115px;
+    background: rgba(8, 15, 8, 0.95); 
+    border: 4px solid #ffffff;
+    box-shadow: 0 0 0 4px #000000, 0 8px 20px rgba(0, 0, 0, 0.6);
+    border-radius: 4px;
+    padding: 18px 22px;
+    color: #ffffff;
+    z-index: 5;
+}
+
+#texto-caixa {
+    font-size: 11px;
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 0px #000000;
+    margin-bottom: 8px;
+    word-wrap: break-word; 
+}
+
+#btn-proximo {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #000000;
+    background: #ffeb3b; 
+    border: 3px solid #ffffff;
+    border-radius: 2px;
+    box-shadow: -3px 3px 0px #8c7b00;
+    padding: 6px 14px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.1s ease;
+}
+
+#btn-proximo:hover {
+    background: #ffffff;
+    box-shadow: -3px 3px 0px #b3b3b3;
+    transform: translate(1px, -1px);
+}
+
+#btn-proximo:active {
+    box-shadow: 0px 0px 0px #000000;
+    transform: translate(-2px, 2px);
+}
+
+/* ==========================================================================
+   📜 CARTA FINAL E RECIPIENTES (Fluxo Corrigido)
+   ========================================================================== */
+#hud-carta {
+    position: absolute;
+    inset: 0;
+    display: none; /* Controlado pelo JS */
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.75); /* Fundo escuro com bom contraste */
+    backdrop-filter: blur(5px);
+    z-index: 100;
+}
+
+/* Container do pergaminho fechado */
+#pergaminho-container {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* 🎯 O papel amarelo AGORA é o item clicável fechado! */
+#papel-fechado {
+    width: 180px;
+    height: 180px;
+    background-image: url("assets/papel-amarelo.png"); 
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.5));
+    animation: flutuar 2.5s infinite ease-in-out;
+    transition: transform 0.2s;
+}
+
+#papel-fechado:hover {
+    transform: scale(1.1) rotate(5deg);
+    filter: drop-shadow(0px 12px 18px rgba(255, 215, 0, 0.6)) brightness(1.1); /* Brilho dourado no hover */
+}
+
+/* Container da Carta Aberta */
+#carta-aberta {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* 🎯 Caixa da carta aberta estilizada sem a imagem de fundo atrapalhando */
+.carta-pergaminho {
+    width: 520px;
+    max-width: 90%;
+    background-color: #fff8e7; /* Tom de papel antigo/marfim macio */
+    border: 6px double #5d4037; /* Borda dupla elegante de madeira */
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 0 40px #f3e5ab; /* Sombra interna vintage */
+    border-radius: 8px;
+    padding: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: abrirPapel 0.4s ease-out forwards;
+}
+
+/* Formatação do texto dentro da folha da carta */
+.texto-carta-real {
+    width: 100%;
+    font-family: 'Georgia', serif; /* Fonte clássica de carta/livro */
+    font-size: 16px;
+    line-height: 1.6;
+    color: #3e2723;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* Botão estilizado para combinar */
+#btn-fechar-carta {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    background: #795548;
+    color: #fff;
+    border: 2px solid #3e2723;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 4px 0 #3e2723;
+    transition: all 0.1s;
+}
+
+#btn-fechar-carta:hover {
+    background: #8d6e63;
+}
+
+#btn-fechar-carta:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+/* Animações */
+@keyframes flutuar {
+    0%, 100% { 
+        transform: translateY(0px); 
+        filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
+    }
+    50% { 
+        transform: translateY(-8px); 
+        filter: drop-shadow(0 12px 6px rgba(0,0,0,0.15));
+    }
+}
+
+@keyframes flutuarTitulo {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes abrirPapel {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Pulsação de cor dourada no HUD de Objetivos */
+@keyframes pulsarBorda {
+    from { border-color: #ffd700; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2); }
+    to { border-color: #ff9100; box-shadow: 0 4px 14px rgba(255, 145, 0, 0.4); }
+}
+
+@keyframes fadeIn {
+    from { background: rgba(0, 0, 0, 0); }
+    to { background: rgba(10, 8, 5, 0.85); }
+}
+
+/* ==========================================================================
+   📱 CONTROLES TOUCH (aparecem apenas em dispositivos móveis / touch)
+   ========================================================================== */
+/* Esconde por padrão (desktop) */
+#controles-mobile {
+    display: none;
+}
+
+/* Estilo dos botões touch quando visíveis */
+.btn-touch {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    border: 2px solid #111;
+    background: #fff;
+    box-shadow: 0 3px 0 #000;
+    margin: 6px 4px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Mostra controles em telas pequenas ou em dispositivos touch */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+    /* Ajustes responsivos finos */
+    #jogo-container { width: 95vw; padding-top: 56.25%; }
+    #controles-mobile {
+        display: flex;
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        flex-direction: column;
+        z-index: 20;
+        background: transparent;
+        padding: 4px;
+    }
+    .btn-touch { display: block; }
+
+    /* Botões escalam com a viewport para não ficarem gigantes em telas pequenas */
+    .btn-touch {
+        width: 6vmin;
+        height: 6vmin;
+        font-size: 3vmin;
+        margin: 4px 6px;
+    }
+
+    /* Diminuir HUD de objetivo em mobile para não ocupar tanto espaço */
+    #texto-objetivo {
+        font-size: 9px;
+        top: 8px;
+        right: 8px;
+        padding: 6px 10px;
+    }
+}
+
+/* Ajustes finos para celulares bem pequenos */
+@media (max-width: 480px) {
+    /* Container levemente menor e borda menos espessa para caber melhor */
+    #jogo-container {
+        width: 98vw;
+        padding-top: 56.25%;
+        border-width: 4px;
+    }
+
+    /* HUD mais compacto */
+    #hud-texto {
+        width: 88%;
+        min-height: 90px;
+        padding: 12px 14px;
+    }
+
+    #texto-caixa { font-size: 12px; }
+
+    /* Objetivo menor */
+    #texto-objetivo { font-size: 8px; padding: 6px 8px; }
+
+    /* Pergaminho e carta menores */
+    #papel-fechado { width: 140px; height: 140px; }
+    .carta-pergaminho { width: 88%; padding: 18px; }
+    .texto-carta-real { font-size: 14px; }
+
+    /* Botões touch mais compactos e menos intrusivos */
+    #controles-mobile { right: 8px; }
+    .btn-touch { width: 12vmin; height: 12vmin; font-size: 4vmin; opacity: 0.95; }
+
+    /* Evita que overlays ocupem muito espaço visual */
+    #btn-proximo { bottom: 8px; right: 10px; padding: 6px 10px; font-size: 8px; }
+}
+
+/* ==========================================================================
+   🎬 TELA DE CRÉDITOS FINAIS
+   ========================================================================== */
+#tela-final-creditos {
+    position: absolute;
+    inset: 0;
+    background: #000000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 300; /* Fica na frente de absolutamente tudo */
+    padding: 40px;
+    gap: 32px;
+}
+
+#texto-agradecimento {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: #ffffff;
+    line-height: 2;
+    text-align: center;
+    max-width: 700px;
+    width: 100%;
+    word-wrap: break-word;
+}
+
+#tela-final-creditos #btn-reiniciar {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    align-self: center;
+    margin-top: 20px;
+}
+
+/* ==========================================================================
+   📝 CONTAINER DE LEGENDAS (Subtítulos)
+   ========================================================================== */
+#legendas-container {
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 700px;
+    background: rgba(10, 8, 5, 0.9);
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    padding: 12px 20px;
+    z-index: 150;
+    text-align: center;
+    animation: fadeIn 0.3s ease-in;
+}
+
+#texto-legenda {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: #ffd700;
+    margin: 0;
+    line-height: 1.4;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Ajustes responsivos para legendas em mobile */
+@media (max-width: 768px) {
+    #legendas-container {
+        bottom: 60px;
+        width: 92%;
+        padding: 10px 16px;
+    }
+
+    #texto-legenda {
+        font-size: 10px;
+    }
+}
