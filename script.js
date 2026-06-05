@@ -39,8 +39,77 @@ Object.keys(botoesMobile).forEach(id => {
     }
 });
 
+const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
 function zerarMovimento() {
     window.inputState = { up: false, down: false, left: false, right: false };
+}
+
+window.mostrarControlesMobile = function() {
+    if (!isTouchDevice) return;
+    const controles = document.getElementById('controles-mobile');
+    if (controles) controles.style.display = 'flex';
+};
+
+window.ocultarControlesMobile = function() {
+    const controles = document.getElementById('controles-mobile');
+    if (controles) controles.style.display = 'none';
+};
+
+let touchStartPos = null;
+const SWIPE_THRESHOLD = 24;
+
+function atualizarMovimentoPorSwipe(dx, dy) {
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) {
+        return;
+    }
+
+    if (absX > absY) {
+        window.inputState.left = dx < -SWIPE_THRESHOLD;
+        window.inputState.right = dx > SWIPE_THRESHOLD;
+        window.inputState.up = false;
+        window.inputState.down = false;
+    } else {
+        window.inputState.up = dy < -SWIPE_THRESHOLD;
+        window.inputState.down = dy > SWIPE_THRESHOLD;
+        window.inputState.left = false;
+        window.inputState.right = false;
+    }
+}
+
+function reiniciarSwipe() {
+    touchStartPos = null;
+    zerarMovimento();
+}
+
+function adicionarControleSwipe() {
+    const canvasElement = document.getElementById('gameCanvas');
+    if (!canvasElement) return;
+
+    canvasElement.addEventListener('touchstart', (event) => {
+        if (!window.jogoMovendo || event.touches.length !== 1) return;
+        const toque = event.touches[0];
+        touchStartPos = { x: toque.clientX, y: toque.clientY };
+    }, { passive: true });
+
+    canvasElement.addEventListener('touchmove', (event) => {
+        if (!window.jogoMovendo || !touchStartPos || event.touches.length !== 1) return;
+        const toque = event.touches[0];
+        const dx = toque.clientX - touchStartPos.x;
+        const dy = toque.clientY - touchStartPos.y;
+        atualizarMovimentoPorSwipe(dx, dy);
+        event.preventDefault();
+    }, { passive: false });
+
+    canvasElement.addEventListener('touchend', () => {
+        reiniciarSwipe();
+    });
+    canvasElement.addEventListener('touchcancel', () => {
+        reiniciarSwipe();
+    });
 }
 
 // 🖼️ CARREGAMENTO DE RECURSOS
@@ -173,6 +242,9 @@ window.abrirCartaNaTela = function () {
     if (hudCarta) hudCarta.style.display = 'flex';
     if (pergaminhoContainer) pergaminhoContainer.style.display = 'flex';
     if (cartaAberta) cartaAberta.style.display = 'none';
+    if (typeof window.ocultarControlesMobile === 'function') {
+        window.ocultarControlesMobile();
+    }
 };
 
 // Configura os cliques assim que a página terminar de carregar por completo
@@ -199,6 +271,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     executarIntroducao();
                 } else {
                     window.jogoMovendo = true;
+                    window.mostrarControlesMobile();
                 }
             }, 500);
         };
@@ -208,11 +281,15 @@ window.addEventListener('DOMContentLoaded', () => {
     if (btnReiniciar) {
         btnReiniciar.onclick = () => {
             if (window.somClick) window.somClick.play().catch(() => {});
+            window.ocultarControlesMobile();
             if (typeof reiniciarJogo === 'function') {
                 reiniciarJogo();
             }
         };
     }
+
+    window.ocultarControlesMobile();
+    adicionarControleSwipe();
 
     // Quando o usuário clica no pergaminho fechado
     if (papelFechado) {

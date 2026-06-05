@@ -6,9 +6,20 @@
     margin: 0;
     padding: 0;
     /* Impede que o jogador selecione textos ou arraste elementos por acidente */
-    user-select: none; 
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     -webkit-user-drag: none;
     -webkit-tap-highlight-color: transparent; /* Remove o flash azul ao tocar no celular */
+}
+
+button, .btn-touch {
+    touch-action: manipulation;
+}
+
+#jogo-container {
+    touch-action: none;
 }
 
 body {
@@ -31,8 +42,11 @@ body {
    ========================================================================== */
 #jogo-container {
     position: relative;
-    width: 800px;
-    height: 450px;
+    width: 95vw; /* Ocupa 95% da largura da tela */
+    max-width: 800px; /* Limite máximo */
+    aspect-ratio: 16 / 9; /* Mantém a proporção */
+    height: auto; /* Deixa o aspect-ratio definir a altura */
+    margin: 0 auto;
     /* Moldura de madeira clássica de jogos antigos */
     border: 6px solid #4a2d18; 
     border-radius: 4px;
@@ -79,12 +93,12 @@ body {
 
 #btn-iniciar {
     font-family: 'Press Start 2P', monospace;
-    font-size: 12px;
+    font-size: 11px;
     color: #ffffff;
     background: #e91e63; /* Rosa vibrante */
     border: 4px solid #ffffff;
     border-radius: 4px;
-    padding: 16px 32px;
+    padding: 12px 24px;
     cursor: pointer;
     box-shadow: -4px 4px 0px #880e4f, 0px 8px 15px rgba(0,0,0,0.4);
     transition: all 0.1s ease;
@@ -104,17 +118,17 @@ body {
 
 #btn-reiniciar {
     font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
+    font-size: 10px;
     color: #ffffff;
     background: #4caf50;
     border: 4px solid #ffffff;
     border-radius: 4px;
-    padding: 10px 20px;
+    padding: 8px 18px;
     cursor: pointer;
     box-shadow: -4px 4px 0px #2e7d32, 0px 8px 15px rgba(0,0,0,0.4);
     transition: all 0.1s ease;
     outline: none;
-    margin-top: 25px;
+    margin-top: 20px;
 }
 
 #btn-reiniciar:hover {
@@ -133,6 +147,7 @@ body {
     display: block;
     width: 100%;
     height: 100%;
+    touch-action: none;
     /* Garante nitidez absoluta para Pixel Art */
     image-rendering: pixelated;
     image-rendering: crisp-edges;
@@ -143,8 +158,9 @@ body {
    ========================================================================== */
 #texto-objetivo {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 10px;
+    right: 10px;
+    max-width: 50%;
     background: rgba(12, 24, 12, 0.85);
     border: 2px solid #ffd700; /* Borda dourada de missão */
     padding: 8px 14px;
@@ -155,7 +171,7 @@ body {
     border-radius: 4px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     pointer-events: none; /* Não bloqueia cliques no jogo */
-    z-index: 10;
+    z-index: 100;
     letter-spacing: 0.5px;
     animation: pulsarBorda 2s infinite alternate;
 }
@@ -165,26 +181,28 @@ body {
    ========================================================================== */
 #hud-texto {
     position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 740px;
-    min-height: 115px;
+    bottom: 16px;
+    left: 12px;
+    right: 84px;
+    width: auto;
+    min-height: 72px;
+    max-width: 46%;
     background: rgba(8, 15, 8, 0.95); 
-    border: 4px solid #ffffff;
-    box-shadow: 0 0 0 4px #000000, 0 8px 20px rgba(0, 0, 0, 0.6);
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px #000000, 0 4px 12px rgba(0, 0, 0, 0.55);
     border-radius: 4px;
-    padding: 18px 22px;
+    padding: 10px 14px;
     color: #ffffff;
-    z-index: 5;
+    transform: none;
+    z-index: 500;
 }
 
 #texto-caixa {
-    font-size: 11px;
-    line-height: 1.8;
-    letter-spacing: 0.5px;
+    font-size: 10px;
+    line-height: 1.5;
+    letter-spacing: 0.4px;
     text-shadow: 2px 2px 0px #000000;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     word-wrap: break-word; 
 }
 
@@ -193,13 +211,13 @@ body {
     bottom: 12px;
     right: 16px;
     font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
+    font-size: 8px;
     color: #000000;
     background: #ffeb3b; 
-    border: 3px solid #ffffff;
+    border: 2px solid #ffffff;
     border-radius: 2px;
-    box-shadow: -3px 3px 0px #8c7b00;
-    padding: 6px 14px;
+    box-shadow: -2px 2px 0px #8c7b00;
+    padding: 5px 10px;
     cursor: pointer;
     outline: none;
     transition: all 0.1s ease;
@@ -265,21 +283,34 @@ body {
     align-items: center;
     width: 100%;
     height: 100%;
+    overflow: auto;
+    padding: 12px;
 }
 
 /* 🎯 Caixa da carta aberta estilizada sem a imagem de fundo atrapalhando */
 .carta-pergaminho {
-    width: 520px;
-    max-width: 90%;
+    width: 440px;
+    max-width: 86%;
+    max-height: 72vh;
     background-color: #fff8e7; /* Tom de papel antigo/marfim macio */
     border: 6px double #5d4037; /* Borda dupla elegante de madeira */
     box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 0 40px #f3e5ab; /* Sombra interna vintage */
     border-radius: 8px;
-    padding: 35px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
+    box-sizing: border-box;
     animation: abrirPapel 0.4s ease-out forwards;
+}
+
+#texto-carta-conteudo {
+    width: 100%;
+    max-height: calc(70vh - 120px);
+    overflow-y: auto;
+    padding-right: 8px;
+    box-sizing: border-box;
 }
 
 /* Formatação do texto dentro da folha da carta */
@@ -300,7 +331,7 @@ body {
     background: #795548;
     color: #fff;
     border: 2px solid #3e2723;
-    padding: 12px 24px;
+    padding: 8px 18px;
     cursor: pointer;
     border-radius: 4px;
     box-shadow: 0 4px 0 #3e2723;
@@ -350,58 +381,111 @@ body {
 }
 
 /* ==========================================================================
-   📱 CONTROLES TOUCH (aparecem apenas em dispositivos móveis / touch)
+   📱 CONTROLES TOUCH (aparecem apenas após o início em mobile)
    ========================================================================== */
-/* Esconde por padrão (desktop) */
+/* Esconde por padrão, só aparece via JavaScript após o menu inicial */
 #controles-mobile {
     display: none;
 }
 
 /* Estilo dos botões touch quando visíveis */
 .btn-touch {
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     border-radius: 4px;
     border: 2px solid #111;
     background: #fff;
     box-shadow: 0 3px 0 #000;
-    margin: 6px 4px;
+    margin: 5px 4px;
     font-family: 'Press Start 2P', monospace;
-    font-size: 14px;
+    font-size: 11px;
     cursor: pointer;
 }
 
-/* Mostra controles em telas pequenas ou em dispositivos touch */
+/* Ajustes responsivos para mobile */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
     /* Ajustes responsivos finos */
-    #jogo-container { width: 95vw; padding-top: 56.25%; }
+    #jogo-container { width: 95vw; }
+    #tela-inicio {
+        padding: 20px;
+    }
+    #tela-inicio .menu-conteudo {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+    #tela-inicio .titulo-jogo {
+        font-size: 22px;
+        line-height: 1.3;
+    }
+    #tela-inicio .subtitulo-jogo {
+        font-size: 8px;
+        margin-bottom: 30px;
+    }
+    #btn-iniciar {
+        padding: 12px 24px;
+        font-size: 11px;
+    }
     #controles-mobile {
-        display: flex;
         position: absolute;
-        right: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        flex-direction: column;
-        z-index: 20;
-        background: transparent;
-        padding: 4px;
+        left: 50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        z-index: 1000;
+        background: rgba(0,0,0,0.18);
+        padding: 8px;
+        border-radius: 16px;
+        max-width: calc(100% - 24px);
     }
     .btn-touch { display: block; }
 
     /* Botões escalam com a viewport para não ficarem gigantes em telas pequenas */
     .btn-touch {
-        width: 6vmin;
-        height: 6vmin;
-        font-size: 3vmin;
-        margin: 4px 6px;
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
+        margin: 0;
     }
 
     /* Diminuir HUD de objetivo em mobile para não ocupar tanto espaço */
     #texto-objetivo {
         font-size: 9px;
-        top: 8px;
-        right: 8px;
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
         padding: 6px 10px;
+    }
+    #hud-texto {
+        left: 6%;
+        right: 6%;
+        transform: none;
+        max-width: 88%;
+        width: auto;
+        padding: 12px 14px;
+        max-height: 34vh;
+        overflow-y: auto;
+    }
+    #texto-caixa {
+        font-size: 11px;
+        line-height: 1.5;
+    }
+    #btn-proximo {
+        bottom: 8px;
+        right: 10px;
+        padding: 6px 10px;
+        font-size: 9px;
+    }
+    .carta-pergaminho {
+        width: 92%;
+        max-width: 360px;
+        padding: 22px;
+    }
+    .texto-carta-real {
+        font-size: 15px;
     }
 }
 
@@ -410,30 +494,59 @@ body {
     /* Container levemente menor e borda menos espessa para caber melhor */
     #jogo-container {
         width: 98vw;
-        padding-top: 56.25%;
         border-width: 4px;
     }
 
     /* HUD mais compacto */
     #hud-texto {
-        width: 88%;
-        min-height: 90px;
-        padding: 12px 14px;
+        left: 5%;
+        right: 5%;
+        transform: none;
+        width: auto;
+        max-width: 90%;
+        min-height: auto;
+        padding: 10px 12px;
+        max-height: 32vh;
+        overflow-y: auto;
     }
 
-    #texto-caixa { font-size: 12px; }
+    #texto-caixa { font-size: 10px; line-height: 1.45; }
 
     /* Objetivo menor */
-    #texto-objetivo { font-size: 8px; padding: 6px 8px; }
+    #texto-objetivo {
+        font-size: 8px;
+        padding: 5px 8px;
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
+    }
 
     /* Pergaminho e carta menores */
-    #papel-fechado { width: 140px; height: 140px; }
-    .carta-pergaminho { width: 88%; padding: 18px; }
+    #papel-fechado { width: 120px; height: 120px; }
+    .carta-pergaminho { width: 92%; max-width: 320px; padding: 16px; }
     .texto-carta-real { font-size: 14px; }
+    #texto-carta-conteudo { max-height: 50vh; overflow-y: auto; }
+    #btn-fechar-carta {
+        width: 100%;
+        max-width: 260px;
+        align-self: center;
+    }
 
     /* Botões touch mais compactos e menos intrusivos */
-    #controles-mobile { right: 8px; }
-    .btn-touch { width: 12vmin; height: 12vmin; font-size: 4vmin; opacity: 0.95; }
+    #controles-mobile {
+        left: 50%;
+        right: auto;
+        bottom: 10px;
+        padding: 6px;
+        transform: translateX(-50%);
+    }
+    .btn-touch {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+        opacity: 0.95;
+        margin: 2px;
+    }
 
     /* Evita que overlays ocupem muito espaço visual */
     #btn-proximo { bottom: 8px; right: 10px; padding: 6px 10px; font-size: 8px; }
@@ -441,7 +554,7 @@ body {
 
 /* ==========================================================================
    🎬 TELA DE CRÉDITOS FINAIS
-   ========================================================================== */
+*/
 #tela-final-creditos {
     position: absolute;
     inset: 0;
@@ -453,6 +566,7 @@ body {
     z-index: 300; /* Fica na frente de absolutamente tudo */
     padding: 40px;
     gap: 32px;
+    overflow-y: auto;
 }
 
 #texto-agradecimento {
@@ -472,6 +586,36 @@ body {
     transition: opacity 0.5s ease;
     align-self: center;
     margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+    #tela-final-creditos {
+        padding: 24px;
+        gap: 20px;
+        justify-content: flex-start;
+    }
+
+    #texto-agradecimento {
+        max-width: 92%;
+        font-size: 11px;
+        line-height: 1.5;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    #tela-final-creditos {
+        padding: 16px;
+        gap: 16px;
+        justify-content: flex-start;
+    }
+
+    #texto-agradecimento {
+        font-size: 10px;
+        line-height: 1.45;
+        max-width: 100%;
+        padding: 0 8px;
+    }
 }
 
 /* ==========================================================================
@@ -512,5 +656,16 @@ body {
 
     #texto-legenda {
         font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    #tela-final-creditos {
+        padding: 24px;
+    }
+
+    #texto-agradecimento {
+        font-size: 10px;
+        line-height: 1.6;
     }
 }

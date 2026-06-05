@@ -53,6 +53,9 @@ function finalizarIntroducao() {
 
     window.jogoMovendo = true;
     window.jogoIniciado = true;
+    if (typeof window.mostrarControlesMobile === 'function') {
+        window.mostrarControlesMobile();
+    }
 }
 
 // ==========================================================================
